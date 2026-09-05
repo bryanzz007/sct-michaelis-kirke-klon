@@ -54,6 +54,8 @@ jobs:
 
       - name: Konfigurer GitHub Pages
         uses: actions/configure-pages@v5
+        with:
+          enablement: true
 
       - name: Pak hjemmesiden
         uses: actions/upload-pages-artifact@v3
