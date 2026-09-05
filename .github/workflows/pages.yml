@@ -1,0 +1,65 @@
+name: Publicer Michaelis-klonen
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: true
+
+env:
+  SOURCE_REPOSITORY: bryanzz007/hannerup-kirke-klon
+  RELEASE_TAG: clone-v1
+  ASSET_NAME: hannerup-kirke-klon.zip
+  ASSET_SHA256: 3987363c5eaa61dc162ca0e5ebbba330446af58d6216a68e92a53ca40a25e970
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Hent designlaget
+        uses: actions/checkout@v4
+
+      - name: Hent Hannerup-grundklonen
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p release
+          gh release download "$RELEASE_TAG" \
+            --repo "$SOURCE_REPOSITORY" \
+            --pattern "$ASSET_NAME" \
+            --dir release
+          echo "$ASSET_SHA256  release/$ASSET_NAME" | sha256sum --check -
+          unzip -q "release/$ASSET_NAME"
+          test -d dist
+
+      - name: Påfør Michaelis-designet
+        run: |
+          mkdir -p dist/clone
+          cp design/michaelis.css dist/clone/michaelis.css
+          cp design/preview.js dist/clone/preview.js
+          node scripts/apply-michaelis-design.mjs
+          touch dist/.nojekyll
+
+      - name: Konfigurer GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Pak hjemmesiden
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+      - name: Publicer
+        id: deployment
+        uses: actions/deploy-pages@v4
