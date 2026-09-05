@@ -3,7 +3,9 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const scriptDir = path.dirname(fileURLToPath(import.meta.url));
-const root = path.resolve(scriptDir, "..", "dist");
+const root = process.argv[2]
+  ? path.resolve(process.cwd(), process.argv[2])
+  : path.resolve(scriptDir, "..", "dist");
 
 function walk(directory) {
   return fs.readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {

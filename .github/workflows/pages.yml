@@ -35,22 +35,22 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          mkdir -p release
+          mkdir -p release site
           gh release download "$RELEASE_TAG" \
             --repo "$SOURCE_REPOSITORY" \
             --pattern "$ASSET_NAME" \
             --dir release
           echo "$ASSET_SHA256  release/$ASSET_NAME" | sha256sum --check -
-          unzip -q "release/$ASSET_NAME"
-          test -d dist
+          unzip -q "release/$ASSET_NAME" -d site
+          test -d site/dist
 
       - name: Påfør Michaelis-designet
         run: |
-          mkdir -p dist/clone
-          cp design/michaelis.css dist/clone/michaelis.css
-          cp design/preview.js dist/clone/preview.js
-          node scripts/apply-michaelis-design.mjs
-          touch dist/.nojekyll
+          mkdir -p site/dist/clone
+          cp design/michaelis.css site/dist/clone/michaelis.css
+          cp design/preview.js site/dist/clone/preview.js
+          node scripts/apply-michaelis-design.mjs site/dist
+          touch site/dist/.nojekyll
 
       - name: Konfigurer GitHub Pages
         uses: actions/configure-pages@v5
@@ -58,7 +58,7 @@ jobs:
       - name: Pak hjemmesiden
         uses: actions/upload-pages-artifact@v3
         with:
-          path: dist
+          path: site/dist
 
       - name: Publicer
         id: deployment
