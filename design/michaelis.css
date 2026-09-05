@@ -273,9 +273,7 @@ body.michaelis-redesign.p91859 .calendar-link:focus-visible {
   outline-offset: -5px;
 }
 
-body.michaelis-redesign.p91859 .calendar-date,
-body.michaelis-redesign.p91859 .basecolor,
-body.michaelis-redesign.p91859 .basecolor_inverted {
+body.michaelis-redesign.p91859 .calendar-date {
   position: static;
   display: flex;
   float: none;
